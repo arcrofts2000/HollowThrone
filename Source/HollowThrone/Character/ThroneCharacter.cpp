@@ -2,9 +2,11 @@
 
 
 #include "ThroneCharacter.h"
+#include "../Projectile/ThroneProjectileHit.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Engine.h"
 
 AThroneCharacter::AThroneCharacter()
 {
@@ -16,6 +18,9 @@ AThroneCharacter::AThroneCharacter()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	RightHandSocketName = "Muzzle_01";
+	LeftHandSocketName = "Muzzle_02";
 }
 
 void AThroneCharacter::BeginPlay()
@@ -38,6 +43,7 @@ void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AThroneCharacter::Move);
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AThroneCharacter::Look);
+	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::PrimaryAttack);
 }
 
 
@@ -63,4 +69,15 @@ void AThroneCharacter::Look(const FInputActionValue& Value)
 
 	AddControllerPitchInput(LookValue.Y);
 	AddControllerYawInput(LookValue.X);
+}
+
+void AThroneCharacter::PrimaryAttack()
+{
+	FVector SpawnLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
+	FRotator SpawnRotation = GetControlRotation();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+
+	AThroneProjectileHit* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileHit>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 }

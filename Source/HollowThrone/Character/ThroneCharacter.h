@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "ThroneCharacter.generated.h"
 
+class AThroneProjectileHit;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -22,6 +23,18 @@ public:
 
 protected:
 
+	// Important
+
+	UPROPERTY(VisibleAnywhere, Category = "Sockets")
+	FName RightHandSocketName;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sockets")
+	FName LeftHandSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<AThroneProjectileHit> ProjectileClass;
+
+
 	// Components
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -35,13 +48,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Move;
-
 	void Move(const FInputActionValue& Value);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Look;
-
 	void Look(const FInputActionValue& Value);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_PrimaryAttack;
+	void PrimaryAttack();
+
 
 	virtual void BeginPlay() override;
 
