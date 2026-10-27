@@ -6,6 +6,7 @@
 #include "NiagaraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -14,12 +15,23 @@ AThroneExplosiveBarrel::AThroneExplosiveBarrel()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetCollisionProfileName("PhysicsActor");
 
 	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComponent"));
+	RadialForceComponent->SetupAttachment(MeshComponent);
+	RadialForceComponent->bAutoActivate = false;
+	RadialForceComponent->bIgnoreOwningActor = true;
+	RadialForceComponent->bImpulseVelChange = false;
+	RadialForceComponent->Radius = 1000.f;
+	RadialForceComponent->ImpulseStrength = 100000.f;
 
 	FireEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FireEffect"));
 	FireEffect->SetupAttachment(MeshComponent);
 	FireEffect->bAutoActivate = false;
+
+	FireSound = CreateDefaultSubobject<UAudioComponent>(TEXT("FireSound"));
+	FireSound->SetupAttachment(MeshComponent);
+	FireSound->bAutoActivate = false;
 }
 
 void AThroneExplosiveBarrel::PostInitializeComponents()
@@ -34,18 +46,19 @@ void AThroneExplosiveBarrel::OnTakeDamage(AActor* DamagedActor, float Damage, co
 	{
 		FTimerHandle ExplodeHandle;
 
-		GetWorldTimerManager().SetTimer(ExplodeHandle, this, &AThroneExplosiveBarrel::Explode, 3.f);
+		GetWorldTimerManager().SetTimer(ExplodeHandle, this, &AThroneExplosiveBarrel::Explode, ExplosionDelay);
 
 		// Effects
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetActorLocation(), FRotator::ZeroRotator);
 		FireEffect->Activate();
+		FireSound->Activate();
 	}
 }
 
 void AThroneExplosiveBarrel::Explode()
 {
-	FireEffect->Deactivate();
 	bExploded = true;
+	FireEffect->Deactivate();
+	FireSound->Deactivate();
 
 	// Effects
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);

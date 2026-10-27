@@ -10,6 +10,7 @@ class UStaticMeshComponent;
 class URadialForceComponent;
 class UNiagaraComponent;
 class UNiagaraSystem;
+class UAudioComponent;
 class USoundBase;
 
 UCLASS()
@@ -31,11 +32,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<URadialForceComponent> RadialForceComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UNiagaraComponent> FireEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TObjectPtr<USoundBase> FireSound;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UAudioComponent> FireSound;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	float ExplosionDelay = 3.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TObjectPtr<UNiagaraSystem> ExplosionEffect;
