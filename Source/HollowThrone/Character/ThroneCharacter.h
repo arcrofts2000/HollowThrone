@@ -8,6 +8,9 @@
 #include "ThroneCharacter.generated.h"
 
 class AThroneProjectileHit;
+class UNiagaraSystem;
+class USoundBase;
+class UAnimMontage;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -25,11 +28,23 @@ protected:
 
 	// Important
 
-	UPROPERTY(VisibleAnywhere, Category = "Sockets")
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	FName RightHandSocketName;
 
-	UPROPERTY(VisibleAnywhere, Category = "Sockets")
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	FName LeftHandSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> PrimaryAttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UNiagaraSystem> CastEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<USoundBase> CastSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float PrimaryAttackDelayTime = 0.2f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<AThroneProjectileHit> ProjectileClass;
@@ -55,8 +70,12 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_Jump;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	void PrimaryAttack();
+	void PrimaryAttackTimerElapsed();
 
 
 	virtual void BeginPlay() override;

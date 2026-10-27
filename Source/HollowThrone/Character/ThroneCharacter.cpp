@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Engine.h"
+#include "NiagaraFunctionLibrary.h"
 
 AThroneCharacter::AThroneCharacter()
 {
@@ -43,6 +44,7 @@ void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AThroneCharacter::Move);
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AThroneCharacter::Look);
+	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::PrimaryAttack);
 }
 
@@ -73,11 +75,25 @@ void AThroneCharacter::Look(const FInputActionValue& Value)
 
 void AThroneCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(PrimaryAttackMontage);
+
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CastEffect, GetMesh(), RightHandSocketName, 
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);
+
+	UGameplayStatics::PlaySound2D(this, CastSound);
+
+	FTimerHandle AttackTimerHandle;
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AThroneCharacter::PrimaryAttackTimerElapsed, PrimaryAttackDelayTime);
+}
+
+void AThroneCharacter::PrimaryAttackTimerElapsed()
+{
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
 	FRotator SpawnRotation = GetControlRotation();
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	AThroneProjectileHit* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileHit>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	AActor* SpawnedProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	MoveIgnoreActorAdd(SpawnedProjectile);
 }
