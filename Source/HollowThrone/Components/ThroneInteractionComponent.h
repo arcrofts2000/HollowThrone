@@ -21,10 +21,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float InteractionRadius;
 
+	UPROPERTY()
+	TObjectPtr<AActor> ClosestActor;
+
 
 public:	
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void Interact();
 
 		
 };

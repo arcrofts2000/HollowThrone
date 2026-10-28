@@ -2,7 +2,9 @@
 
 
 #include "ThroneInteractionComponent.h"
+#include "Core/ThroneInteractionInterface.h"
 #include "Engine/OverlapResult.h"
+#include "ThroneGameTypes.h"
 
 
 UThroneInteractionComponent::UThroneInteractionComponent()
@@ -20,7 +22,7 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	FVector Centre = PC->GetPawn()->GetActorLocation();
 
 	TArray<FOverlapResult> Overlaps;
-	ECollisionChannel CollisionChannel = ECC_Visibility;
+	ECollisionChannel CollisionChannel = COLLISION_INTERACTION;
 	FCollisionShape CollisionShape;
 	CollisionShape.SetSphere(InteractionRadius);
 
@@ -28,7 +30,7 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	DrawDebugSphere(GetWorld(), Centre, InteractionRadius, 20, FColor::Green);
 
-	AActor* ClosestActor = nullptr;
+	ClosestActor = nullptr;
 	float HighestDotProduct = -1.0f;
 
 	for (FOverlapResult& Overlap : Overlaps)
@@ -50,3 +52,10 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	}
 }
 
+void UThroneInteractionComponent::Interact()
+{
+	if (IThroneInteractionInterface* InteractionInterface = Cast<IThroneInteractionInterface>(ClosestActor))
+	{
+		InteractionInterface->Interact();
+	}
+}
