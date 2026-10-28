@@ -18,7 +18,9 @@ public:
 
 protected:
 
-	virtual void BeginPlay() override;
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float InteractionRadius;
+
 
 public:	
 
