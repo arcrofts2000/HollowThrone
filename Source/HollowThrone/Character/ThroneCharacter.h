@@ -49,6 +49,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<AThroneProjectileHit> PrimaryProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<AThroneProjectileHit> BlackholeProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<AThroneProjectileHit> DashProjectileClass;
+
 
 	// Components
 
@@ -75,6 +81,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	void PrimaryAttack();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_BlackholeAttack;
+	void BlackholeAttack();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_DashAbility;
+	void DashAbility();
 
 
 	// Modified to be re-usable across secondary (blackhole) attack and Dash.

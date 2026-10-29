@@ -47,6 +47,8 @@ void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AThroneCharacter::Look);
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::PrimaryAttack);
+	EnhancedInput->BindAction(Input_BlackholeAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::BlackholeAttack);
+	EnhancedInput->BindAction(Input_DashAbility, ETriggerEvent::Triggered, this, &AThroneCharacter::DashAbility);
 }
 
 
@@ -74,14 +76,23 @@ void AThroneCharacter::Look(const FInputActionValue& Value)
 	AddControllerYawInput(LookValue.X);
 }
 
-
-
 void AThroneCharacter::PrimaryAttack()
 {
 	Attack(PrimaryProjectileClass);
 }
 
+void AThroneCharacter::BlackholeAttack()
+{
+	Attack(BlackholeProjectileClass);
+}
 
+void AThroneCharacter::DashAbility()
+{
+	Attack(DashProjectileClass);
+}
+
+
+// Basic Projectile logic (Anims, delay, etc.)
 
 void AThroneCharacter::Attack(TSubclassOf<AActor> ClassToSpawn)
 {
