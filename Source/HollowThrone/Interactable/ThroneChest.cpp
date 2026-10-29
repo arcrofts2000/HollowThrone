@@ -30,16 +30,18 @@ void AThroneChest::Tick(float DeltaTime)
 	CurrentLidPitch = FMath::FInterpConstantTo(CurrentLidPitch, TargetLidPitch, DeltaTime, LidOpenSpeed);
 	LidMesh->SetRelativeRotation(FRotator(CurrentLidPitch, 0.f, 0.f));
 
+	// Checking if the animation is finished
 	if (FMath::IsNearlyEqual(CurrentLidPitch, TargetLidPitch))
 	{
 		SetActorTickEnabled(false);
+		OnChestAnimFinished();
 	}
 }
 
 
 /* Begin Interaction Interface */
 
-void AThroneChest::Interact()
+void AThroneChest::Interact_Implementation()
 {
 	SetActorTickEnabled(true);
 }

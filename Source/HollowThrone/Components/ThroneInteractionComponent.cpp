@@ -2,7 +2,7 @@
 
 
 #include "ThroneInteractionComponent.h"
-#include "Core/ThroneInteractionInterface.h"
+#include "../Core/ThroneInteractionInterface.h"
 #include "Engine/OverlapResult.h"
 #include "ThroneGameTypes.h"
 
@@ -54,8 +54,5 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UThroneInteractionComponent::Interact()
 {
-	if (IThroneInteractionInterface* InteractionInterface = Cast<IThroneInteractionInterface>(ClosestActor))
-	{
-		InteractionInterface->Interact();
-	}
+	IThroneInteractionInterface::Execute_Interact(ClosestActor);
 }

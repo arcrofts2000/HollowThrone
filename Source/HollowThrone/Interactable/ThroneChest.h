@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Chest")
 	float LidOpenSpeed;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnChestAnimFinished();
+
 
 public:	
 
@@ -42,7 +45,7 @@ public:
 	
 	/* Begin Interaction Interface */
 
-	virtual void Interact() override;
+	virtual void Interact_Implementation() override;
 	
 	/* End Interaction Interface */
 

@@ -12,20 +12,7 @@
 
 AThroneProjectileHit::AThroneProjectileHit()
 {
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	RootComponent = SphereComponent;
-	SphereComponent->SetSphereRadius(16.f);
-	SphereComponent->SetCollisionProfileName("Projectile");
-
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
-	NiagaraComponent->SetupAttachment(SphereComponent);
-
-	TravelAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("TravelAudioComponent"));
-	TravelAudioComponent->SetupAttachment(SphereComponent);
-
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	ProjectileMovementComponent->InitialSpeed = 2000.f;
-	ProjectileMovementComponent->ProjectileGravityScale = 0.f;
+	
 }
 
 void AThroneProjectileHit::PostInitializeComponents()

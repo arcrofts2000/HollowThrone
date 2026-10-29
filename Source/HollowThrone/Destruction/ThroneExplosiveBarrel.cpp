@@ -64,6 +64,9 @@ void AThroneExplosiveBarrel::Explode()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 
+	MeshComponent->AddImpulse(FVector::UpVector * 750, NAME_None, true);
+	MeshComponent->AddAngularImpulseInDegrees(FVector::LeftVector * 500, NAME_None, true);
+
 	// Gameplay
 	RadialForceComponent->FireImpulse();
 }

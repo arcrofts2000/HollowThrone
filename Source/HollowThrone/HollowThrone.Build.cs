@@ -10,7 +10,7 @@ public class HollowThrone : ModuleRules
 
 		PublicIncludePaths.Add("HollowThrone");
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Niagara", });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

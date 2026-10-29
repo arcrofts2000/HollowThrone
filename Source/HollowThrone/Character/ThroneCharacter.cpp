@@ -22,6 +22,7 @@ AThroneCharacter::AThroneCharacter()
 
 	RightHandSocketName = "Muzzle_01";
 	LeftHandSocketName = "Muzzle_02";
+	AttackDelayTime = 0.2f;
 }
 
 void AThroneCharacter::BeginPlay()
@@ -73,7 +74,16 @@ void AThroneCharacter::Look(const FInputActionValue& Value)
 	AddControllerYawInput(LookValue.X);
 }
 
+
+
 void AThroneCharacter::PrimaryAttack()
+{
+	Attack(PrimaryProjectileClass);
+}
+
+
+
+void AThroneCharacter::Attack(TSubclassOf<AActor> ClassToSpawn)
 {
 	PlayAnimMontage(PrimaryAttackMontage);
 
@@ -83,10 +93,12 @@ void AThroneCharacter::PrimaryAttack()
 	UGameplayStatics::PlaySound2D(this, CastSound);
 
 	FTimerHandle AttackTimerHandle;
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AThroneCharacter::PrimaryAttackTimerElapsed, PrimaryAttackDelayTime);
+	FTimerDelegate AttackDelegate;
+	AttackDelegate.BindUObject(this, &AThroneCharacter::AttackAnimTimerElapsed, ClassToSpawn);
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackDelegate, 1.f, false, AttackDelayTime);
 }
 
-void AThroneCharacter::PrimaryAttackTimerElapsed()
+void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AActor> ClassToSpawn)
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
 	FRotator SpawnRotation = GetControlRotation();
@@ -94,6 +106,6 @@ void AThroneCharacter::PrimaryAttackTimerElapsed()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	AActor* SpawnedProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	AActor* SpawnedProjectile = GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 	MoveIgnoreActorAdd(SpawnedProjectile);
 }

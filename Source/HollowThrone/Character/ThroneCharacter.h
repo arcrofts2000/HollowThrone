@@ -44,10 +44,10 @@ protected:
 	TObjectPtr<USoundBase> CastSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	float PrimaryAttackDelayTime = 0.2f;
+	float AttackDelayTime;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AThroneProjectileHit> ProjectileClass;
+	TSubclassOf<AThroneProjectileHit> PrimaryProjectileClass;
 
 
 	// Components
@@ -75,8 +75,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	void PrimaryAttack();
-	void PrimaryAttackTimerElapsed();
 
+
+	// Modified to be re-usable across secondary (blackhole) attack and Dash.
+
+	void Attack(TSubclassOf<AActor> ClassToSpawn);
+	void AttackAnimTimerElapsed(TSubclassOf<AActor> ClassToSpawn);
 
 	virtual void BeginPlay() override;
 

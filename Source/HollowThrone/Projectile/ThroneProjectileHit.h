@@ -3,18 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "ThroneProjectileBase.h"
 #include "ThroneProjectileHit.generated.h"
 
 class UDamageType;
 class UNiagaraSystem;
-class UAudioComponent;
-class USphereComponent;
-class UNiagaraComponent;
-class UProjectileMovementComponent;
+class USoundBase;
 
 UCLASS(Abstract)
-class HOLLOWTHRONE_API AThroneProjectileHit : public AActor
+class HOLLOWTHRONE_API AThroneProjectileHit : public AThroneProjectileBase
 {
 	GENERATED_BODY()
 	
@@ -28,8 +25,10 @@ public:
 protected:
 
 	// Damage
+
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UDamageType> DamageTypeClass;
+
 
 	// Effects
 
@@ -38,21 +37,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	TObjectPtr<USoundBase> ExplosionSound;
-		
-
-	// Components
-
-	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	TObjectPtr<USphereComponent> SphereComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	TObjectPtr<UNiagaraComponent> NiagaraComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Audio")
-	TObjectPtr<UAudioComponent> TravelAudioComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
 
 	// Functions
