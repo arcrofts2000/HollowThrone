@@ -13,6 +13,7 @@ class USoundBase;
 class UAnimMontage;
 class USpringArmComponent;
 class UCameraComponent;
+class UThroneAbilitySystemComponent;
 class UInputAction;
 
 UCLASS()
@@ -55,6 +56,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<AThroneProjectileBase> DashProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
 
 	// Components
 
@@ -63,6 +67,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UThroneAbilitySystemComponent> AbilitySystemComponent;
 
 
 	// Input
@@ -96,12 +103,17 @@ protected:
 	void Attack(TSubclassOf<AThroneProjectileBase> ClassToSpawn);
 	void AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase> ClassToSpawn);
 
-	virtual void BeginPlay() override;
+	UFUNCTION()
+	void OnHealthChanged(float OldHealth, float NewHealth);
+
 
 public:	
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 
 };

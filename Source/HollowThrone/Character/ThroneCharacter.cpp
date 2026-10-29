@@ -5,9 +5,11 @@
 #include "Projectile/ThroneProjectileBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "AbilitySystem/ThroneAbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Engine.h"
 #include "NiagaraFunctionLibrary.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 AThroneCharacter::AThroneCharacter()
 {
@@ -20,21 +22,18 @@ AThroneCharacter::AThroneCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
+	AbilitySystemComponent = CreateDefaultSubobject<UThroneAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
 	RightHandSocketName = "Muzzle_01";
 	LeftHandSocketName = "Muzzle_02";
 	AttackDelayTime = 0.2f;
 }
 
-void AThroneCharacter::BeginPlay()
+void AThroneCharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 	
-}
-
-void AThroneCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	AbilitySystemComponent->OnHealthChanged.AddDynamic(this, &AThroneCharacter::OnHealthChanged);
 }
 
 void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -50,6 +49,16 @@ void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInput->BindAction(Input_BlackholeAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, BlackholeProjectileClass);
 	EnhancedInput->BindAction(Input_DashAbility, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, DashProjectileClass);
 }
+
+float AThroneCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	AbilitySystemComponent->ApplyHealthChange(-ActualDamage);
+	return ActualDamage;
+}
+
+
 
 
 // Input Functions
@@ -104,4 +113,15 @@ void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase>
 
 	AThroneProjectileBase* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileBase>(ClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 	MoveIgnoreActorAdd(SpawnedProjectile);
+}
+
+
+void AThroneCharacter::OnHealthChanged(float OldHealth, float NewHealth)
+{
+	if (NewHealth <= 0.f)
+	{
+		DisableInput(nullptr);
+		GetMovementComponent()->StopMovementImmediately();
+		PlayAnimMontage(DeathMontage);
+	}
 }
