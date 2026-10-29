@@ -10,6 +10,7 @@
 #include "Engine.h"
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "ThroneGameTypes.h"
 
 AThroneCharacter::AThroneCharacter()
 {
@@ -27,6 +28,7 @@ AThroneCharacter::AThroneCharacter()
 	RightHandSocketName = "Muzzle_01";
 	LeftHandSocketName = "Muzzle_02";
 	AttackDelayTime = 0.2f;
+	ProjectileTraceDistance = 5000.f;
 }
 
 void AThroneCharacter::PostInitializeComponents()
@@ -110,6 +112,21 @@ void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase>
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
+
+	FHitResult Hit;
+	FVector EyeLocation = CameraComponent->GetComponentLocation();
+	FRotator EyeRotation = GetControlRotation();
+	FVector TraceEnd = EyeLocation + (EyeRotation.Vector() * ProjectileTraceDistance);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_PROJECTILE, Params))
+	{
+		// If linetrace is successful, adjust the rotation to meet the target
+		// Without this, the projectile would spawn slightly off centre
+
+		SpawnRotation = (Hit.Location - SpawnLocation).Rotation();
+	}
 
 	AThroneProjectileBase* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileBase>(ClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 	MoveIgnoreActorAdd(SpawnedProjectile);

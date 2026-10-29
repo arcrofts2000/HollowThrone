@@ -6,6 +6,9 @@
 #include "Engine/OverlapResult.h"
 #include "ThroneGameTypes.h"
 
+TAutoConsoleVariable<bool> CVarInteractionDebugDraw(TEXT("throne.interaction.debug"), false,
+	TEXT("Draw debug render for Interaction Component, 1 = On / 0 = Off"), ECVF_Cheat);
+
 
 UThroneInteractionComponent::UThroneInteractionComponent()
 {
@@ -18,6 +21,8 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	bool bEnableDebugDraw = CVarInteractionDebugDraw.GetValueOnGameThread();
+
 	APlayerController* PC = CastChecked<APlayerController>(GetOwner());
 	FVector Centre = PC->GetPawn()->GetActorLocation();
 
@@ -28,7 +33,8 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	GetWorld()->OverlapMultiByChannel(Overlaps, Centre, FQuat::Identity, CollisionChannel, CollisionShape);
 
-	DrawDebugSphere(GetWorld(), Centre, InteractionRadius, 20, FColor::Green);
+	if (bEnableDebugDraw)
+		DrawDebugSphere(GetWorld(), Centre, InteractionRadius, 20, FColor::Green);
 
 	ClosestActor = nullptr;
 	float HighestDotProduct = -1.0f;
@@ -46,7 +52,7 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		}
 	}
 
-	if (ClosestActor)
+	if (ClosestActor && bEnableDebugDraw)
 	{
 		DrawDebugBox(GetWorld(), ClosestActor->GetActorLocation(), FVector(50.0f), FColor::Red);
 	}

@@ -47,6 +47,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float AttackDelayTime;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float ProjectileTraceDistance;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<AThroneProjectileBase> PrimaryProjectileClass;
 
