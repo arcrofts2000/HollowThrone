@@ -7,7 +7,7 @@
 #include "InputActionValue.h"
 #include "ThroneCharacter.generated.h"
 
-class AThroneProjectileHit;
+class AThroneProjectileBase;
 class UNiagaraSystem;
 class USoundBase;
 class UAnimMontage;
@@ -47,13 +47,13 @@ protected:
 	float AttackDelayTime;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AThroneProjectileHit> PrimaryProjectileClass;
+	TSubclassOf<AThroneProjectileBase> PrimaryProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AThroneProjectileHit> BlackholeProjectileClass;
+	TSubclassOf<AThroneProjectileBase> BlackholeProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AThroneProjectileHit> DashProjectileClass;
+	TSubclassOf<AThroneProjectileBase> DashProjectileClass;
 
 
 	// Components
@@ -93,8 +93,8 @@ protected:
 
 	// Modified to be re-usable across secondary (blackhole) attack and Dash.
 
-	void Attack(TSubclassOf<AActor> ClassToSpawn);
-	void AttackAnimTimerElapsed(TSubclassOf<AActor> ClassToSpawn);
+	void Attack(TSubclassOf<AThroneProjectileBase> ClassToSpawn);
+	void AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase> ClassToSpawn);
 
 	virtual void BeginPlay() override;
 

@@ -2,7 +2,7 @@
 
 
 #include "ThroneCharacter.h"
-#include "../Projectile/ThroneProjectileHit.h"
+#include "Projectile/ThroneProjectileBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
@@ -46,9 +46,9 @@ void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AThroneCharacter::Move);
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AThroneCharacter::Look);
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::PrimaryAttack);
-	EnhancedInput->BindAction(Input_BlackholeAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::BlackholeAttack);
-	EnhancedInput->BindAction(Input_DashAbility, ETriggerEvent::Triggered, this, &AThroneCharacter::DashAbility);
+	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, PrimaryProjectileClass);
+	EnhancedInput->BindAction(Input_BlackholeAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, BlackholeProjectileClass);
+	EnhancedInput->BindAction(Input_DashAbility, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, DashProjectileClass);
 }
 
 
@@ -76,25 +76,10 @@ void AThroneCharacter::Look(const FInputActionValue& Value)
 	AddControllerYawInput(LookValue.X);
 }
 
-void AThroneCharacter::PrimaryAttack()
-{
-	Attack(PrimaryProjectileClass);
-}
-
-void AThroneCharacter::BlackholeAttack()
-{
-	Attack(BlackholeProjectileClass);
-}
-
-void AThroneCharacter::DashAbility()
-{
-	Attack(DashProjectileClass);
-}
-
 
 // Basic Projectile logic (Anims, delay, etc.)
 
-void AThroneCharacter::Attack(TSubclassOf<AActor> ClassToSpawn)
+void AThroneCharacter::Attack(TSubclassOf<AThroneProjectileBase> ClassToSpawn)
 {
 	PlayAnimMontage(PrimaryAttackMontage);
 
@@ -109,7 +94,7 @@ void AThroneCharacter::Attack(TSubclassOf<AActor> ClassToSpawn)
 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackDelegate, 1.f, false, AttackDelayTime);
 }
 
-void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AActor> ClassToSpawn)
+void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase> ClassToSpawn)
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
 	FRotator SpawnRotation = GetControlRotation();
@@ -117,6 +102,6 @@ void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AActor> ClassToSpawn)
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	AActor* SpawnedProjectile = GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
+	AThroneProjectileBase* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileBase>(ClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 	MoveIgnoreActorAdd(SpawnedProjectile);
 }
