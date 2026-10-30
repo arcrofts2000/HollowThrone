@@ -21,6 +21,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float InteractionRadius;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float DirectionWeightMultiplier;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float DistanceToWeightMultiplier;
+
 	UPROPERTY()
 	TObjectPtr<AActor> ClosestActor;
 

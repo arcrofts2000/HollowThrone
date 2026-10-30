@@ -15,6 +15,8 @@ UThroneInteractionComponent::UThroneInteractionComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	InteractionRadius = 300.0f;
+	DirectionWeightMultiplier = 1.f;
+	DistanceToWeightMultiplier = 1.f;
 }
 
 void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -25,6 +27,7 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	APlayerController* PC = CastChecked<APlayerController>(GetOwner());
 	FVector Centre = PC->GetPawn()->GetActorLocation();
+	FVector CameraLocation = PC->PlayerCameraManager->GetCameraLocation();
 
 	TArray<FOverlapResult> Overlaps;
 	ECollisionChannel CollisionChannel = COLLISION_INTERACTION;
@@ -37,17 +40,36 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		DrawDebugSphere(GetWorld(), Centre, InteractionRadius, 20, FColor::Green);
 
 	ClosestActor = nullptr;
-	float HighestDotProduct = -1.0f;
+	float BestWeight = 0.0f;
+
+	float InteractionRadiusSqrd = InteractionRadius * InteractionRadius;
 
 	for (FOverlapResult& Overlap : Overlaps)
 	{
-		FVector OverlapDirection = (Overlap.GetActor()->GetActorLocation() - Centre).GetSafeNormal();
+		// Getting the origin (centre of the actor) rather than gettin Actor Location
+		// Slightly worse performance wise, but more accurate for interaction detection
+		FVector Origin;
+		FVector BoxExtent;
+		Overlap.GetActor()->GetActorBounds(true, Origin, BoxExtent);
 
+		FVector OverlapDirection = (Origin - CameraLocation).GetSafeNormal();
+		
+		// Calculate the dot product of the angle the player is looking at vs the intended object, and then
+		// normalise it so that the value never goes below 0
 		float DotProduct = FVector::DotProduct(OverlapDirection, PC->GetControlRotation().Vector());
+		float NormalisedDotProduct = DotProduct * 0.5f + 0.5f;
 
-		if (DotProduct > HighestDotProduct)
+		// Calculate the distance between the Player and the intended object, and then normalise it by dividing by 
+		// the interaction radius (as this is the furthest away the player can be to interact)
+		/*							Set to Squared for Performance optimisation							*/
+		float DistanceToSqrd = (Origin - Centre).SizeSquared();
+		float NormalisedDistanceTo = DistanceToSqrd / InteractionRadiusSqrd;
+
+		float Weight = (NormalisedDotProduct * DirectionWeightMultiplier) + (NormalisedDistanceTo * DistanceToWeightMultiplier);
+
+		if (Weight > BestWeight)
 		{
-			HighestDotProduct = DotProduct;
+			BestWeight = Weight;
 			ClosestActor = Overlap.GetActor();
 		}
 	}

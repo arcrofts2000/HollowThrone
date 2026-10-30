@@ -127,6 +127,10 @@ void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase>
 
 		SpawnRotation = (Hit.Location - SpawnLocation).Rotation();
 	}
+	else
+	{
+		SpawnRotation = (TraceEnd - SpawnLocation).Rotation();
+	}
 
 	AThroneProjectileBase* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileBase>(ClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 	MoveIgnoreActorAdd(SpawnedProjectile);
