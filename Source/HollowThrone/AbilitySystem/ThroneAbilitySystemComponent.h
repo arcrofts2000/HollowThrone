@@ -38,7 +38,7 @@ public:
 	
 	UThroneAbilitySystemComponent();
 
-	void ApplyHealthChange(float HealthDelta);
+	bool ApplyHealthChange(float HealthDelta);
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FOnHealthChangedSignature OnHealthChanged;

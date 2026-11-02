@@ -16,6 +16,7 @@ AThroneExplosiveBarrel::AThroneExplosiveBarrel()
 	RootComponent = MeshComponent;
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionProfileName("PhysicsActor");
+	MeshComponent->SetCanEverAffectNavigation(false);
 
 	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComponent"));
 	RadialForceComponent->SetupAttachment(MeshComponent);
