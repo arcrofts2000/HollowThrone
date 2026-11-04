@@ -12,6 +12,11 @@ UCLASS()
 class HOLLOWTHRONE_API UThroneBTService_CheckRangeTo : public UBTService
 {
 	GENERATED_BODY()
+
+public:
+
+	UThroneBTService_CheckRangeTo();
+
 	
 	UPROPERTY(EditAnywhere, Category = "AI")
 	float MaxAttackRange = 500.f;

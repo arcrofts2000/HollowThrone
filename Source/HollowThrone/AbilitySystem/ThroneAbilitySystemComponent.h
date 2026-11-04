@@ -40,6 +40,8 @@ public:
 
 	bool ApplyHealthChange(float HealthDelta);
 
+	float GetHealthPercent() const;
+
 	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FOnHealthChangedSignature OnHealthChanged;
 

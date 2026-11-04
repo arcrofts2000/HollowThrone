@@ -9,6 +9,7 @@ UThroneAbilitySystemComponent::UThroneAbilitySystemComponent()
 
 }
 
+/* returns a boolean variable indicating whether the health has changed enough */
 bool UThroneAbilitySystemComponent::ApplyHealthChange(float HealthDelta)
 {
 	float OldHealth = AttributeSet.Health;
@@ -26,4 +27,10 @@ bool UThroneAbilitySystemComponent::ApplyHealthChange(float HealthDelta)
 
 	// Health did not change enough
 	return false;
+}
+
+/* Returns the health percentage as a value between 0 and 100 */
+float UThroneAbilitySystemComponent::GetHealthPercent() const
+{
+	return (AttributeSet.Health / AttributeSet.MaxHealth) * 100.f;
 }

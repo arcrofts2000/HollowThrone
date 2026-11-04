@@ -6,6 +6,17 @@
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Projectile/ThroneProjectileBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
+#include "ThroneGameTypes.h"
+
+UThroneBTTask_RangedAttack::UThroneBTTask_RangedAttack()
+{
+	TargetActorKey.SelectedKeyName = NAME_TargetActor;
+	FireSound = CreateDefaultSubobject<USoundBase>(TEXT("FireSound"));
+}
+
+
 
 EBTNodeResult::Type UThroneBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -32,6 +43,8 @@ EBTNodeResult::Type UThroneBTTask_RangedAttack::ExecuteTask(UBehaviorTreeCompone
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	AActor* SpawnedProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+	UGameplayStatics::PlaySoundAtLocation(this, FireSound, SpawnLocation);
 
 	return SpawnedProjectile ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 }

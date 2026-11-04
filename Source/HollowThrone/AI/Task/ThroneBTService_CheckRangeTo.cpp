@@ -4,6 +4,15 @@
 #include "AI/Task/ThroneBTService_CheckRangeTo.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
+#include "ThroneGameTypes.h"
+
+
+UThroneBTService_CheckRangeTo::UThroneBTService_CheckRangeTo()
+{
+	TargetActorKey.SelectedKeyName = NAME_TargetActor;
+}
+
+
 
 void UThroneBTService_CheckRangeTo::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
