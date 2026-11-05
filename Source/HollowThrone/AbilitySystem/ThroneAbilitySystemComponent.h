@@ -27,7 +27,7 @@ struct FThroneAttributeSet
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, OldHealth, float, NewHealth);
 
-
+class UThroneAbility;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HOLLOWTHRONE_API UThroneAbilitySystemComponent : public UActorComponent
@@ -38,6 +38,11 @@ public:
 	
 	UThroneAbilitySystemComponent();
 
+	virtual void InitializeComponent() override;
+
+	void StartAbility(FName InAbilityName);
+	void StopAbility(FName InAbilityName);
+
 	bool ApplyHealthChange(float HealthDelta);
 
 	float GetHealthPercent() const;
@@ -46,9 +51,23 @@ public:
 	FOnHealthChangedSignature OnHealthChanged;
 
 
+	// Abilities
+
+	void GrantAbility(TSubclassOf<UThroneAbility> AbilityToGrant);
+
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FThroneAttributeSet AttributeSet;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UThroneAbility>> Abilities;
+
+	UPROPERTY(EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UThroneAbility>> DefaultAbilities;
+
+
+	
 		
 };

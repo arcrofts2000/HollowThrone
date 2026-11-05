@@ -26,43 +26,13 @@ public:
 	AThroneCharacter();
 
 protected:
-
-	// Important
-
-	UPROPERTY(VisibleAnywhere, Category = "Combat")
-	FName RightHandSocketName;
-
-	UPROPERTY(VisibleAnywhere, Category = "Combat")
-	FName LeftHandSocketName;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TObjectPtr<UAnimMontage> PrimaryAttackMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TObjectPtr<UNiagaraSystem> CastEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TObjectPtr<USoundBase> CastSound;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	float AttackDelayTime;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	float ProjectileTraceDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AThroneProjectileBase> PrimaryProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AThroneProjectileBase> BlackholeProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AThroneProjectileBase> DashProjectileClass;
+	// Animations
 
 	UPROPERTY(EditDefaultsOnly, Category = "Death")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
 
+	
 	// Components
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -70,6 +40,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
+
+
+	// Ability System
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UThroneAbilitySystemComponent> AbilitySystemComponent;
@@ -90,21 +63,22 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
-	void PrimaryAttack();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_BlackholeAttack;
-	void BlackholeAttack();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_DashAbility;
-	void DashAbility();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_Sprint;
 
 
 	// Modified to be re-usable across secondary (blackhole) attack and Dash.
 
-	void Attack(TSubclassOf<AThroneProjectileBase> ClassToSpawn);
-	void AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase> ClassToSpawn);
+	void StartAbility(FName InAbilityName);
+
+	void StopAbility(FName InAbilityName);
 
 	UFUNCTION()
 	void OnHealthChanged(float OldHealth, float NewHealth);

@@ -25,10 +25,7 @@ AThroneCharacter::AThroneCharacter()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UThroneAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
-	RightHandSocketName = "Muzzle_01";
-	LeftHandSocketName = "Muzzle_02";
-	AttackDelayTime = 0.2f;
-	ProjectileTraceDistance = 5000.f;
+	
 }
 
 void AThroneCharacter::PostInitializeComponents()
@@ -44,12 +41,25 @@ void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
+	// Bind movement and look input actions
+
 	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AThroneCharacter::Move);
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AThroneCharacter::Look);
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, PrimaryProjectileClass);
-	EnhancedInput->BindAction(Input_BlackholeAttack, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, BlackholeProjectileClass);
-	EnhancedInput->BindAction(Input_DashAbility, ETriggerEvent::Triggered, this, &AThroneCharacter::Attack, DashProjectileClass);
+
+	// Bind abilities to input actions
+
+	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this,
+		&AThroneCharacter::StartAbility, FName("Sprint"));
+	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this,
+		&AThroneCharacter::StopAbility, FName("Sprint"));
+
+	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, 
+		&AThroneCharacter::StartAbility, FName("PrimaryAttack"));
+	EnhancedInput->BindAction(Input_BlackholeAttack, ETriggerEvent::Triggered, this, 
+		&AThroneCharacter::StartAbility, FName("BlackholeAttack"));
+	EnhancedInput->BindAction(Input_DashAbility, ETriggerEvent::Triggered, this, 
+		&AThroneCharacter::StartAbility, FName("Teleport"));
 }
 
 float AThroneCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -59,8 +69,6 @@ float AThroneCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	AbilitySystemComponent->ApplyHealthChange(-ActualDamage);
 	return ActualDamage;
 }
-
-
 
 
 // Input Functions
@@ -88,52 +96,14 @@ void AThroneCharacter::Look(const FInputActionValue& Value)
 }
 
 
-// Basic Projectile logic (Anims, delay, etc.)
-
-void AThroneCharacter::Attack(TSubclassOf<AThroneProjectileBase> ClassToSpawn)
+void AThroneCharacter::StartAbility(FName InAbilityName)
 {
-	PlayAnimMontage(PrimaryAttackMontage);
-
-	UNiagaraFunctionLibrary::SpawnSystemAttached(CastEffect, GetMesh(), RightHandSocketName, 
-		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);
-
-	UGameplayStatics::PlaySound2D(this, CastSound);
-
-	FTimerHandle AttackTimerHandle;
-	FTimerDelegate AttackDelegate;
-	AttackDelegate.BindUObject(this, &AThroneCharacter::AttackAnimTimerElapsed, ClassToSpawn);
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackDelegate, 1.f, false, AttackDelayTime);
+	AbilitySystemComponent->StartAbility(InAbilityName);
 }
 
-void AThroneCharacter::AttackAnimTimerElapsed(TSubclassOf<AThroneProjectileBase> ClassToSpawn)
+void AThroneCharacter::StopAbility(FName InAbilityName)
 {
-	FVector SpawnLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
-	FRotator SpawnRotation = GetControlRotation();
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-
-	FHitResult Hit;
-	FVector EyeLocation = CameraComponent->GetComponentLocation();
-	FRotator EyeRotation = GetControlRotation();
-	FVector TraceEnd = EyeLocation + (EyeRotation.Vector() * ProjectileTraceDistance);
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-
-	if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_PROJECTILE, Params))
-	{
-		// If linetrace is successful, adjust the rotation to meet the target
-		// Without this, the projectile would spawn slightly off centre
-
-		SpawnRotation = (Hit.Location - SpawnLocation).Rotation();
-	}
-	else
-	{
-		SpawnRotation = (TraceEnd - SpawnLocation).Rotation();
-	}
-
-	AThroneProjectileBase* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileBase>(ClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
-	MoveIgnoreActorAdd(SpawnedProjectile);
+	AbilitySystemComponent->StopAbility(InAbilityName);
 }
 
 

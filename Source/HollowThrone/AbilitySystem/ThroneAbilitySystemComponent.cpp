@@ -2,12 +2,66 @@
 
 
 #include "AbilitySystem/ThroneAbilitySystemComponent.h"
+#include "AbilitySystem/ThroneAbility.h"
 
 
 UThroneAbilitySystemComponent::UThroneAbilitySystemComponent()
 {
-
+	// Must be set in order to initialize the component on Actor spawn and call InitializeComponent()
+	bWantsInitializeComponent = true;
 }
+
+void UThroneAbilitySystemComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	for (TSubclassOf<UThroneAbility> AbilityClass : DefaultAbilities)
+	{
+		// Ensured so that we don't try to grant a null ability class, which would cause a crash.
+		if (ensureMsgf(AbilityClass, TEXT("Failed to grant ability, AbilityClass is null.")))
+		{
+			GrantAbility(AbilityClass);
+		}
+	}
+}
+
+
+void UThroneAbilitySystemComponent::GrantAbility(TSubclassOf<UThroneAbility> AbilityToGrant)
+{
+	UThroneAbility* NewAbility = NewObject<UThroneAbility>(this, AbilityToGrant);
+	Abilities.Add(NewAbility);
+}
+
+void UThroneAbilitySystemComponent::StartAbility(FName InAbilityName)
+{
+	for (UThroneAbility* Ability : Abilities)
+	{
+		if (Ability->GetAbilityName() == InAbilityName)
+		{
+			Ability->StartAbility();
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("No Ability found with name: %s"), *InAbilityName.ToString());
+}
+
+
+void UThroneAbilitySystemComponent::StopAbility(FName InAbilityName)
+{
+	for (UThroneAbility* Ability : Abilities)
+	{
+		if (Ability->GetAbilityName() == InAbilityName)
+		{
+			Ability->StopAbility();
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("No Ability found with name: %s"), *InAbilityName.ToString());
+}
+
+
 
 /* returns a boolean variable indicating whether the health has changed enough */
 bool UThroneAbilitySystemComponent::ApplyHealthChange(float HealthDelta)
