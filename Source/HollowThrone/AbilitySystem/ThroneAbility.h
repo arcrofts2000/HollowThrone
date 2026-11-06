@@ -17,10 +17,16 @@ class HOLLOWTHRONE_API UThroneAbility : public UObject
 protected: 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
-	FName AbilityName = FName("PrimaryAttack");
+	FName AbilityName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	float CooldownTime = 0.f;
 
 
 public:
+
+	UFUNCTION()
+	bool CanStart() const;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Abilities")
 	void StartAbility();
@@ -32,4 +38,14 @@ public:
 	UThroneAbilitySystemComponent* GetOwningComponent() const;
 
 	FORCEINLINE FName GetAbilityName() const { return AbilityName; }
+
+	FORCEINLINE float GetCooldownRemaining() const { return FMath::Max(0.0f, CooldownUntil - GetWorld()->GetTimeSeconds()); }
+
+
+
+protected:
+
+	/* Time until Ability can be used again */
+	UPROPERTY(Transient)
+	float CooldownUntil = 0.f;
 };

@@ -4,9 +4,23 @@
 #include "AbilitySystem/ThroneAbility.h"
 #include "AbilitySystem/ThroneAbilitySystemComponent.h"
 
+
+bool UThroneAbility::CanStart() const
+{
+	if (GetCooldownRemaining() > 0.f)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Cooldown Remaining: %f"), GetCooldownRemaining());
+		return false;
+	}
+
+	return true;
+}
+
+
+
 void UThroneAbility::StartAbility_Implementation()
 {
-	
+
 }
 
 void UThroneAbility::StopAbility_Implementation()
@@ -17,6 +31,8 @@ void UThroneAbility::StopAbility_Implementation()
 	UE_LOGFMT(LogTemp, Log, "Stopped Ability: {AbilityName} - {WorldTime}",
 		("AbilityName", AbilityName),
 		("WorldTime", GameTime));
+
+	CooldownUntil = GetWorld()->GetTimeSeconds() + CooldownTime;
 }
 
 UThroneAbilitySystemComponent* UThroneAbility::GetOwningComponent() const

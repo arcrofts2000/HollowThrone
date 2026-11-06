@@ -14,6 +14,8 @@ UThroneAbility_Projectile::UThroneAbility_Projectile()
 	RightHandSocketName = "Muzzle_01";
 	AttackDelayTime = 0.2f;
 	ProjectileTraceDistance = 5000.f;
+
+	CooldownTime = 0.5f;
 }
 
 void UThroneAbility_Projectile::StartAbility_Implementation()
@@ -35,6 +37,7 @@ void UThroneAbility_Projectile::StartAbility_Implementation()
 
 	AttackDelegate.BindUObject(this, &ThisClass::AttackAnimTimerElapsed, Character);
 	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, AttackDelegate, 1.f, false, AttackDelayTime);
+
 }
 
 
@@ -70,4 +73,6 @@ void UThroneAbility_Projectile::AttackAnimTimerElapsed(ACharacter* Character)
 
 	AThroneProjectileBase* SpawnedProjectile = GetWorld()->SpawnActor<AThroneProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 	Character->MoveIgnoreActorAdd(SpawnedProjectile);
+
+	StopAbility();
 }

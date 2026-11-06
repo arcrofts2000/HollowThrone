@@ -82,5 +82,11 @@ void UThroneInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UThroneInteractionComponent::Interact()
 {
+	if (!ClosestActor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Closest Actor to Interact with"));
+		return;
+	}
+
 	IThroneInteractionInterface::Execute_Interact(ClosestActor);
 }
