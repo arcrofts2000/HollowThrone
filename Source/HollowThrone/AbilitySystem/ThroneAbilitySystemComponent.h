@@ -27,7 +27,12 @@ struct FThroneAttributeSet
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, OldHealth, float, NewHealth);
 
+
+
+struct FGameplayTag;
 class UThroneAbility;
+
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HOLLOWTHRONE_API UThroneAbilitySystemComponent : public UActorComponent
@@ -40,8 +45,8 @@ public:
 
 	virtual void InitializeComponent() override;
 
-	void StartAbility(FName InAbilityName);
-	void StopAbility(FName InAbilityName);
+	void StartAbility(FGameplayTag InAbilityName);
+	void StopAbility(FGameplayTag InAbilityName);
 
 	bool ApplyHealthChange(float HealthDelta);
 

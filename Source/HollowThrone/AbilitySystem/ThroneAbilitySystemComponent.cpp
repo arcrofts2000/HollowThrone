@@ -32,7 +32,7 @@ void UThroneAbilitySystemComponent::GrantAbility(TSubclassOf<UThroneAbility> Abi
 	Abilities.Add(NewAbility);
 }
 
-void UThroneAbilitySystemComponent::StartAbility(FName InAbilityName)
+void UThroneAbilitySystemComponent::StartAbility(FGameplayTag InAbilityName)
 {
 	for (UThroneAbility* Ability : Abilities)
 	{
@@ -51,7 +51,7 @@ void UThroneAbilitySystemComponent::StartAbility(FName InAbilityName)
 }
 
 
-void UThroneAbilitySystemComponent::StopAbility(FName InAbilityName)
+void UThroneAbilitySystemComponent::StopAbility(FGameplayTag InAbilityName)
 {
 	for (UThroneAbility* Ability : Abilities)
 	{

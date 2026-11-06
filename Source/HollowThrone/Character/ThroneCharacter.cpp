@@ -11,6 +11,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "ThroneGameTypes.h"
+#include "GameplayTagContainer.h"
 
 AThroneCharacter::AThroneCharacter()
 {
@@ -96,12 +97,12 @@ void AThroneCharacter::Look(const FInputActionValue& Value)
 }
 
 
-void AThroneCharacter::StartAbility(FName InAbilityName)
+void AThroneCharacter::StartAbility(FGameplayTag InAbilityName)
 {
 	AbilitySystemComponent->StartAbility(InAbilityName);
 }
 
-void AThroneCharacter::StopAbility(FName InAbilityName)
+void AThroneCharacter::StopAbility(FGameplayTag InAbilityName)
 {
 	AbilitySystemComponent->StopAbility(InAbilityName);
 }

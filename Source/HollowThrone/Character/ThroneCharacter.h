@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "ThroneCharacter.generated.h"
 
+struct FGameplayTag;
 class AThroneProjectileBase;
 class UNiagaraSystem;
 class USoundBase;
@@ -76,9 +77,9 @@ protected:
 
 	// Modified to be re-usable across secondary (blackhole) attack and Dash.
 
-	void StartAbility(FName InAbilityName);
+	void StartAbility(FGameplayTag InAbilityName);
 
-	void StopAbility(FName InAbilityName);
+	void StopAbility(FGameplayTag InAbilityName);
 
 	UFUNCTION()
 	void OnHealthChanged(float OldHealth, float NewHealth);

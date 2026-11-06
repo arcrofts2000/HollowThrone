@@ -12,7 +12,7 @@
 
 AThroneProjectileHit::AThroneProjectileHit()
 {
-	
+	InitialLifeSpan = 5.f;
 }
 
 void AThroneProjectileHit::PostInitializeComponents()
