@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
 #include "ThroneAbilitySystemComponent.generated.h"
 
 
@@ -29,7 +30,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, O
 
 
 
-struct FGameplayTag;
 class UThroneAbility;
 
 
@@ -45,8 +45,7 @@ public:
 
 	virtual void InitializeComponent() override;
 
-	void StartAbility(FGameplayTag InAbilityName);
-	void StopAbility(FGameplayTag InAbilityName);
+	
 
 	bool ApplyHealthChange(float HealthDelta);
 
@@ -58,7 +57,14 @@ public:
 
 	// Abilities
 
+	FGameplayTagContainer ActiveGameplayTags;
+
+	void StartAbility(FGameplayTag InAbilityName);
+	void StopAbility(FGameplayTag InAbilityName);
+	
 	void GrantAbility(TSubclassOf<UThroneAbility> AbilityToGrant);
+
+	
 
 
 protected:

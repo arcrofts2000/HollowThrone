@@ -21,6 +21,12 @@ bool UThroneAbility::CanStart() const
 		return false;
 	}
 
+	if (GetOwningComponent()->ActiveGameplayTags.HasAny(BlockedTags))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Ability is blocked: %s"), *AbilityName.ToString());
+		return false;
+	}
+
 	return true;
 }
 
@@ -29,6 +35,8 @@ bool UThroneAbility::CanStart() const
 void UThroneAbility::StartAbility_Implementation()
 {
 	bIsRunning = true;
+
+	GetOwningComponent()->ActiveGameplayTags.AppendTags(GrantedTags);
 }
 
 void UThroneAbility::StopAbility_Implementation()
@@ -39,10 +47,11 @@ void UThroneAbility::StopAbility_Implementation()
 	float GameTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
 
 	UE_LOGFMT(LogTemp, Log, "Stopped Ability: {AbilityName} - {WorldTime}",
-		("AbilityName", AbilityName),
+		("AbilityName", AbilityName.ToString()),
 		("WorldTime", GameTime));
 
 	CooldownUntil = GetWorld()->GetTimeSeconds() + CooldownTime;
+	GetOwningComponent()->ActiveGameplayTags.RemoveTags(GrantedTags);
 }
 
 UThroneAbilitySystemComponent* UThroneAbility::GetOwningComponent() const

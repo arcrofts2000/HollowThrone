@@ -21,6 +21,12 @@ protected:
 	FGameplayTag AbilityName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	FGameplayTagContainer GrantedTags;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	FGameplayTagContainer BlockedTags;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	float CooldownTime = 0.f;
 
 
@@ -28,8 +34,6 @@ public:
 
 	UFUNCTION()
 	bool CanStart() const;
-
-	
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Abilities")
 	void StartAbility();
@@ -39,6 +43,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	UThroneAbilitySystemComponent* GetOwningComponent() const;
+
+
 
 	FORCEINLINE FGameplayTag GetAbilityName() const { return AbilityName; }
 

@@ -12,6 +12,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "ThroneGameTypes.h"
 #include "GameplayTagContainer.h"
+#include "ThroneGameplayTags.h"
 
 AThroneCharacter::AThroneCharacter()
 {
@@ -51,16 +52,16 @@ void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	// Bind abilities to input actions
 
 	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this,
-		&AThroneCharacter::StartAbility, FName("Sprint"));
+		&AThroneCharacter::StartAbility, ThroneGameplayTags::Ability_Sprint.GetTag());
 	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this,
-		&AThroneCharacter::StopAbility, FName("Sprint"));
+		&AThroneCharacter::StopAbility, ThroneGameplayTags::Ability_Sprint.GetTag());
 
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, 
-		&AThroneCharacter::StartAbility, FName("PrimaryAttack"));
+		&AThroneCharacter::StartAbility, ThroneGameplayTags::Ability_PrimaryAttack.GetTag());
 	EnhancedInput->BindAction(Input_BlackholeAttack, ETriggerEvent::Triggered, this, 
-		&AThroneCharacter::StartAbility, FName("BlackholeAttack"));
+		&AThroneCharacter::StartAbility, ThroneGameplayTags::Ability_SecondaryAttack.GetTag());
 	EnhancedInput->BindAction(Input_DashAbility, ETriggerEvent::Triggered, this, 
-		&AThroneCharacter::StartAbility, FName("Teleport"));
+		&AThroneCharacter::StartAbility, ThroneGameplayTags::Ability_Dash.GetTag());
 }
 
 float AThroneCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
