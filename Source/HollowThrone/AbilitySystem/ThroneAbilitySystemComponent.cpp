@@ -3,18 +3,38 @@
 
 #include "AbilitySystem/ThroneAbilitySystemComponent.h"
 #include "AbilitySystem/ThroneAbility.h"
+#include "ThroneAttributeSet.h"
 
 
 UThroneAbilitySystemComponent::UThroneAbilitySystemComponent()
 {
 	// Must be set in order to initialize the component on Actor spawn and call InitializeComponent()
 	bWantsInitializeComponent = true;
+
+	AttributeSetClass = UThroneAttributeSet::StaticClass();
 }
 
 void UThroneAbilitySystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	InitializeAttributes();
+	InitializeAbilities();
+}
+
+void UThroneAbilitySystemComponent::InitializeAttributes()
+{
+	AttributeSet = NewObject<UThroneAttributeSet>(this, AttributeSetClass);
+
+	/* Iterate through properties within Attribute Set, specifically Iterating through type Struct */
+	for (TFieldIterator<FStructProperty> PropIt(AttributeSet->GetClass()); PropIt; ++PropIt)
+	{
+		FThroneAttribute* FoundAttribute = PropIt->ContainerPtrToValuePtr<FThroneAttribute>(AttributeSet);
+	}
+}
+
+void UThroneAbilitySystemComponent::InitializeAbilities()
+{
 	for (TSubclassOf<UThroneAbility> AbilityClass : DefaultAbilities)
 	{
 		// Ensured so that we don't try to grant a null ability class, which would cause a crash.
@@ -70,25 +90,33 @@ void UThroneAbilitySystemComponent::StopAbility(FGameplayTag InAbilityName)
 /* returns a boolean variable indicating whether the health has changed enough */
 bool UThroneAbilitySystemComponent::ApplyHealthChange(float HealthDelta)
 {
-	float OldHealth = AttributeSet.Health;
-	
-	AttributeSet.Health = FMath::Clamp(AttributeSet.Health += HealthDelta, 0.f, AttributeSet.MaxHealth);
-	UE_LOG(LogTemp, Log, TEXT("New Health: %f, MaxHealth: %f"), AttributeSet.Health, AttributeSet.MaxHealth);
+	//float OldHealth = AttributeSet.Health;
+	//
+	//AttributeSet.Health = FMath::Clamp(AttributeSet.Health += HealthDelta, 0.f, AttributeSet.MaxHealth);
+	//UE_LOG(LogTemp, Log, TEXT("New Health: %f, MaxHealth: %f"), AttributeSet.Health, AttributeSet.MaxHealth);
 
 
-	if (!FMath::IsNearlyEqual(OldHealth, AttributeSet.Health))
-	{
-		// Notify listeners only when health changed significantly
-		OnHealthChanged.Broadcast(OldHealth, AttributeSet.Health);
-		return true;
-	}
+	//if (!FMath::IsNearlyEqual(OldHealth, AttributeSet.Health))
+	//{
+	//	// Notify listeners only when health changed significantly
+	//	OnHealthChanged.Broadcast(OldHealth, AttributeSet.Health);
+	//	return true;
+	//}
 
 	// Health did not change enough
-	return false;
+	return true;
 }
 
 /* Returns the health percentage as a value between 0 and 100 */
 float UThroneAbilitySystemComponent::GetHealthPercent() const
 {
-	return (AttributeSet.Health / AttributeSet.MaxHealth) * 100.f;
+	/*return (AttributeSet.Health / AttributeSet.MaxHealth) * 100.f;*/
+	return true;
+}
+
+FThroneAttribute* UThroneAbilitySystemComponent::GetAttribute(FGameplayTag InAttributeTag)
+{
+	FThroneAttribute** FoundAttribute = CachedAttributes.Find(InAttributeTag);
+	
+	return *FoundAttribute;
 }
