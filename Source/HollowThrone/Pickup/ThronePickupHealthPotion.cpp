@@ -3,6 +3,7 @@
 
 #include "Pickup/ThronePickupHealthPotion.h"
 #include "AbilitySystem/ThroneAbilitySystemComponent.h"
+#include "ThroneGameplayTags.h"
 
 
 AThronePickupHealthPotion::AThronePickupHealthPotion()
@@ -17,7 +18,7 @@ void AThronePickupHealthPotion::BeginOverlap(UPrimitiveComponent* OverlappedComp
 	{
 		// Call Apply Health change,
 		// base functionality (destroy self and play sound) should only be valid if Health has changed
-		if (ASC->ApplyHealthChange(AmountToIncrease))
+		if (ASC->ApplyAttributeChange(ThroneGameplayTags::Attribute_Health, AmountToIncrease, EAttributeModifyType::Base))
 		{
 			// Call this after added functionality
 			Super::BeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);

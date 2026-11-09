@@ -30,6 +30,11 @@ void UThroneAbilitySystemComponent::InitializeAttributes()
 	for (TFieldIterator<FStructProperty> PropIt(AttributeSet->GetClass()); PropIt; ++PropIt)
 	{
 		FThroneAttribute* FoundAttribute = PropIt->ContainerPtrToValuePtr<FThroneAttribute>(AttributeSet);
+
+		FName AttributeTagName = FName("Attribute." + PropIt->GetName());
+		FGameplayTag AttributeTag = FGameplayTag::RequestGameplayTag(AttributeTagName);
+
+		CachedAttributes.Add(AttributeTag, FoundAttribute);
 	}
 }
 
@@ -88,8 +93,8 @@ void UThroneAbilitySystemComponent::StopAbility(FGameplayTag InAbilityName)
 
 
 /* returns a boolean variable indicating whether the health has changed enough */
-bool UThroneAbilitySystemComponent::ApplyHealthChange(float HealthDelta)
-{
+//bool UThroneAbilitySystemComponent::ApplyHealthChange(float HealthDelta)
+//{
 	//float OldHealth = AttributeSet.Health;
 	//
 	//AttributeSet.Health = FMath::Clamp(AttributeSet.Health += HealthDelta, 0.f, AttributeSet.MaxHealth);
@@ -104,19 +109,84 @@ bool UThroneAbilitySystemComponent::ApplyHealthChange(float HealthDelta)
 	//}
 
 	// Health did not change enough
-	return true;
+	//return true;
+//}
+
+bool UThroneAbilitySystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag, float AttributeDelta, EAttributeModifyType ModifyType)
+{
+	FThroneAttribute* FoundAttribute = GetAttribute(AttributeTag);
+	check(FoundAttribute);
+
+
+	float OldValue = 0.f;
+	float NewValue = 0.f;
+
+
+	switch (ModifyType)
+	{
+	case EAttributeModifyType::Base:
+		OldValue = FoundAttribute->Base;
+		FoundAttribute->Base += AttributeDelta;
+		AttributeSet->PostAttributeChange();
+
+		NewValue = FoundAttribute->Base;
+
+		break;
+	
+	case EAttributeModifyType::Modifier:
+		OldValue = FoundAttribute->Modifier;
+		FoundAttribute->Modifier += AttributeDelta;
+		AttributeSet->PostAttributeChange();
+
+		NewValue = FoundAttribute->Modifier;
+
+		break;
+	
+	case EAttributeModifyType::OverrideBase:
+		OldValue = FoundAttribute->Base;
+		FoundAttribute->Base = AttributeDelta;
+		AttributeSet->PostAttributeChange();
+
+		NewValue = FoundAttribute->Base;
+
+		break;
+
+	case EAttributeModifyType::Invalid:
+		// Crash the game, something went wrong.
+		check(false);
+		break;
+	}
+
+	
+
+	UE_LOGFMT(LogTemp, Log, "Attribute: {AttributeTag}, New: {NewValue}, Old: {OldValue}",
+		AttributeTag.ToString(),
+		NewValue,
+		OldValue);
+
+	
+	
+	if (!FMath::IsNearlyEqual(OldValue, NewValue))
+	{
+		if (FOnAttributeChangedSignature* Event = AttributeDelegates.Find(AttributeTag))
+			Event->Broadcast(AttributeTag, OldValue, NewValue);
+
+		return true;
+	}
+
+	// Health did not change enough
+	return false;
 }
 
-/* Returns the health percentage as a value between 0 and 100 */
-float UThroneAbilitySystemComponent::GetHealthPercent() const
-{
-	/*return (AttributeSet.Health / AttributeSet.MaxHealth) * 100.f;*/
-	return true;
-}
 
 FThroneAttribute* UThroneAbilitySystemComponent::GetAttribute(FGameplayTag InAttributeTag)
 {
 	FThroneAttribute** FoundAttribute = CachedAttributes.Find(InAttributeTag);
 	
 	return *FoundAttribute;
+}
+
+FOnAttributeChangedSignature& UThroneAbilitySystemComponent::GetAttributeDelegate(FGameplayTag InAttributeTag)
+{
+	return AttributeDelegates.FindOrAdd(InAttributeTag);
 }

@@ -82,7 +82,7 @@ protected:
 	void StopAbility(FGameplayTag InAbilityName);
 
 	UFUNCTION()
-	void OnHealthChanged(float OldHealth, float NewHealth);
+	void OnHealthChanged(FGameplayTag AttributeTag, float OldHealth, float NewHealth);
 
 
 public:	

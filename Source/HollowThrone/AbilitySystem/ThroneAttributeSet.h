@@ -37,7 +37,10 @@ UCLASS()
 class HOLLOWTHRONE_API UThroneAttributeSet : public UObject
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	virtual void PostAttributeChange() {};
 };
 
 
@@ -56,5 +59,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Attributes")
 	FThroneAttribute MaxHealth;
+
+	virtual void PostAttributeChange() override;
 
 };

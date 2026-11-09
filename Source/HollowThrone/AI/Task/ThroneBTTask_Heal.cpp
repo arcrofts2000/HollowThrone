@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "AbilitySystem/ThroneAbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ThroneGameplayTags.h"
 
 EBTNodeResult::Type UThroneBTTask_Heal::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -17,7 +18,7 @@ EBTNodeResult::Type UThroneBTTask_Heal::ExecuteTask(UBehaviorTreeComponent& Owne
 	UThroneAbilitySystemComponent* ASC = OwnedPawn->GetComponentByClass<UThroneAbilitySystemComponent>();
 	ensureMsgf(ASC, TEXT("UThroneBTTask_Heal::ExecuteTask - Pawn %s does not have a UThroneAbilitySystemComponent, cannot heal."), *OwnedPawn->GetName());
 
-	if (ASC->ApplyHealthChange(HealAmount))
+	if (ASC->ApplyAttributeChange(ThroneGameplayTags::Attribute_Health, HealAmount, EAttributeModifyType::Base))
 	{
 		// If the heal was successful, play the sound and return success.
 		UGameplayStatics::PlaySoundAtLocation(this, HealSound, OwnedPawn->GetActorLocation());

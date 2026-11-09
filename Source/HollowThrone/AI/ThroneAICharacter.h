@@ -7,6 +7,7 @@
 #include "ThroneAICharacter.generated.h"
 
 class UThroneAbilitySystemComponent;
+struct FGameplayTag;
 
 UCLASS()
 class HOLLOWTHRONE_API AThroneAICharacter : public ACharacter
@@ -30,7 +31,7 @@ protected:
 	// Functions
 
 	UFUNCTION()
-	void OnHealthChanged(float OldHealth, float NewHealth);
+	void OnHealthChanged(FGameplayTag AttributeTag, float OldHealth, float NewHealth);
 
 
 public:

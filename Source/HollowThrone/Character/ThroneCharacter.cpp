@@ -34,7 +34,8 @@ void AThroneCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	AbilitySystemComponent->OnHealthChanged.AddDynamic(this, &AThroneCharacter::OnHealthChanged);
+	FOnAttributeChangedSignature& Event = AbilitySystemComponent->GetAttributeDelegate(ThroneGameplayTags::Attribute_Health);
+	Event.AddUObject(this, &AThroneCharacter::OnHealthChanged);
 }
 
 void AThroneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -68,7 +69,7 @@ float AThroneCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	AbilitySystemComponent->ApplyHealthChange(-ActualDamage);
+	AbilitySystemComponent->ApplyAttributeChange(ThroneGameplayTags::Attribute_Health, -ActualDamage, EAttributeModifyType::Base);
 	return ActualDamage;
 }
 
@@ -109,7 +110,7 @@ void AThroneCharacter::StopAbility(FGameplayTag InAbilityName)
 }
 
 
-void AThroneCharacter::OnHealthChanged(float OldHealth, float NewHealth)
+void AThroneCharacter::OnHealthChanged(FGameplayTag AttributeTag, float OldHealth, float NewHealth)
 {
 	if (NewHealth <= 0.f)
 	{

@@ -4,6 +4,7 @@
 #include "AI/Decorator/ThroneBTDecorator_LowHealth.h"
 #include "AIController.h"
 #include "AbilitySystem/ThroneAbilitySystemComponent.h"
+#include "Core/ThroneGameplayStatics.h"
 
 bool UThroneBTDecorator_LowHealth::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
@@ -16,5 +17,5 @@ bool UThroneBTDecorator_LowHealth::CalculateRawConditionValue(UBehaviorTreeCompo
 	ensureMsgf(ASC, TEXT("UThroneBTDecorator_LowHealth: Pawn is missing AbilitySystemComponent"));
 
 	// If the Health Percentage is less than the minimum health percent, return true.
-	return ASC->GetHealthPercent() <= MinimumHealthPercent ? true : false;
+	return UThroneGameplayStatics::GetHealthPercent(ASC) <= MinimumHealthPercent ? true : false;
 }

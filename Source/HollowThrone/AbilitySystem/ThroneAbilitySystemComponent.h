@@ -9,9 +9,18 @@
 
 
 
+UENUM()
+enum EAttributeModifyType
+{
+	Base,
+	Modifier,
+	OverrideBase,
+	Invalid
+};
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, OldHealth, float, NewHealth);
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChangedSignature, FGameplayTag /* AttributeTag */, float /* Old Value */, float /* New Value */);
 
 
 
@@ -36,14 +45,13 @@ public:
 
 	
 
-	bool ApplyHealthChange(float HealthDelta);
+	bool ApplyAttributeChange(FGameplayTag AttributeTag, float AttributeDelta, EAttributeModifyType ModifyType);
 
-	float GetHealthPercent() const;
 
 	FThroneAttribute* GetAttribute(FGameplayTag InAttributeTag);
 
-	UPROPERTY(BlueprintAssignable, Category = "Delegate")
-	FOnHealthChangedSignature OnHealthChanged;
+	FOnAttributeChangedSignature& GetAttributeDelegate(FGameplayTag InAttributeTag);
+	
 
 
 	// Abilities
@@ -69,6 +77,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attributes", NoClear)
 	TSubclassOf<UThroneAttributeSet> AttributeSetClass;
 
+	TMap<FGameplayTag, FOnAttributeChangedSignature> AttributeDelegates;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UThroneAbility>> Abilities;

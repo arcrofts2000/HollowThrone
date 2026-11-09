@@ -4,6 +4,7 @@
 #include "AI/ThroneAICharacter.h"
 #include "AbilitySystem/ThroneAbilitySystemComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "ThroneGameplayTags.h"
 
 
 AThroneAICharacter::AThroneAICharacter()
@@ -15,7 +16,8 @@ void AThroneAICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AbilitySystemComponent->OnHealthChanged.AddDynamic(this, &AThroneAICharacter::OnHealthChanged);
+	FOnAttributeChangedSignature& Event = AbilitySystemComponent->GetAttributeDelegate(ThroneGameplayTags::Attribute_Health);
+	Event.AddUObject(this, &AThroneAICharacter::OnHealthChanged);
 }
 
 
@@ -24,11 +26,11 @@ float AThroneAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	AbilitySystemComponent->ApplyHealthChange(-ActualDamage);
+	AbilitySystemComponent->ApplyAttributeChange(ThroneGameplayTags::Attribute_Health, -ActualDamage, EAttributeModifyType::Base);
 	return ActualDamage;
 }
 
-void AThroneAICharacter::OnHealthChanged(float OldHealth, float NewHealth)
+void AThroneAICharacter::OnHealthChanged(FGameplayTag AttributeTag, float OldHealth, float NewHealth)
 {
 	if (NewHealth <= 0.f)
 	{

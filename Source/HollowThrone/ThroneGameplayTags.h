@@ -11,4 +11,7 @@ namespace ThroneGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_PrimaryAttack);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_SecondaryAttack);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Dash);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_Health);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_MaxHealth);
 }
